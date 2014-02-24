@@ -325,10 +325,10 @@ class Logical(Expression):
         const = Constant(lexer.Num(1), ty.Type.Int)
         self.emit(il.Assign(temp, const), frame)
         self.emit(il.Goto(t), frame)
-        self.emitlabel(f, frame)
+        self.emit_label(f, frame)
         const = Constant(lexer.Num(0), ty.Type.Int)
         self.emit(il.Assign(temp, const), frame)
-        self.emitlabel(t, frame)
+        self.emit_label(t, frame)
         return temp
 
     def __str__(self):
@@ -351,7 +351,7 @@ class And(Logical):
         self._expr1.jumping(0, label, frame)
         self._expr2.jumping(t, f, frame)
         if f == 0:
-            self.emitlabel(label, frame)
+            self.emit_label(label, frame)
 
 class Or(Logical):
     """ Or class
@@ -370,7 +370,7 @@ class Or(Logical):
         self._expr1.jumping(label, 0, frame)
         self._expr2.jumping(t, f, frame)
         if t != 0:
-            self.emitlabel(label, frame)
+            self.emit_label(label, frame)
 
 class Rel(Logical):
     """ Rel class
@@ -499,7 +499,7 @@ class Do(Statement):
         self._after = f
         label = frame.new_label()
         self._stmt.gen(t, label)
-        self.emitlabel(label, frame)
+        self.emit_label(label, frame)
         self._expr.jumping(t, 0, frame)
 
     def check(self):

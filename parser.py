@@ -1,13 +1,13 @@
 __author__ = 'ZhangJingtian'
 import ty
 import il
+import gen
 import ast
 import sym
-import cpu
 import lexer
 import errors
 
-class Parser(object):
+class Parser(gen.CodeGenerator):
     """Parser class
 
     """
@@ -178,7 +178,7 @@ class Parser(object):
         self._match(lexer.Tag.ID)
         self._match(';')
         id_type = ty.Struct(token)
-        id_obj = ast.Identifier(token, id_type)
+        id_obj  = ast.Identifier(token, id_type)
         id_type.get_identifier_table().init(prev=None, owner_id=id_obj)
         return id_obj
 
@@ -252,8 +252,8 @@ class Parser(object):
         self._match(':')
         oftype = self._parse_type_specifier()
         self._match(';')
-        id = ast.Identifier(token, oftype)
-        return id
+        id_obj = ast.Identifier(token, oftype)
+        return id_obj
 
 
     def _parse_type_specifiers(self, types):
@@ -404,6 +404,9 @@ class Parser(object):
 
             id_obj.get_type().get_identifier_table().init(self._ids, id_obj)
             frame = il.Frame(id_obj)
+            #alloc parameters' space
+            for param_obj in id_obj.get_type().get_protos():
+                frame.alloc_local(param_obj, is_param=True)
             self._frames[str(id_obj)] = frame
         return
 
@@ -522,9 +525,10 @@ class Parser(object):
             function_definition -> 'function' 'identifier' compound_statement ';'
 
         """
-        func_stmt = self._parse_compount_statement(func_obj.get_type().get_identifier_table())
+        func_type = func_obj.get_type()
+        func_stmt = self._parse_compount_statement(func_type.get_identifier_table())
         self._match(';')
-        func_obj.get_type().set_statement(func_stmt)
+        func_type.set_statement(func_stmt)
 
     def _parse_statement_list(self, env):
         """ <statement_list>
@@ -660,7 +664,7 @@ class Parser(object):
         frame = self._frames.get(str(id_obj))
         va_list = self._parse_variable_declaration_list(env)
         for local_obj in va_list:
-            frame.alloc_local(local_obj, is_local=True)
+            frame.alloc_local(local_obj)
         stmt = self._parse_statement_list(env)
         env.pop_scope()
         self._match('}')
@@ -1097,6 +1101,7 @@ class Parser(object):
         Iterate the tacodes and call the code generate runtine.
 
         """
+
         pass
 
 

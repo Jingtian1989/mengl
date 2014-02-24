@@ -82,15 +82,16 @@ class Struct(Type):
         super(Struct, self).__init__("STRUCT", lexer.Tag.STRUCT, 0, 0)
         self._ids = sym.IdentifierTable()
         self._token  = token
-        self._used   = 0
 
     def get_identifier_table(self):
         return self._ids
 
     def init_struct_field(self, id_obj):
-        id_type = id_obj.get_type()
-        id_obj.set_offset(self._used)
-        self._used = self._used + id_type.get_width()
+        id_type     = id_obj.get_type()
+        id_align    = id_type.get_align()
+        id_offset   = (self.width + (id_align - 1))&(~(id_align-1))
+        self.width  = id_offset + id_type.get_width()
+        id_obj.set_offset(id_offset)
 
     def __str__(self):
         return str(self._token)

@@ -315,95 +315,72 @@ mengl is a mixset of the C and Pascal language.
 	gpr1 as frame pointer register(fp)
 	gpr2 as code segment register(cs)
 	gpr3 as static area register(ds)
-	gpr5 as a accumulate register for storing operation's result(acc)
-	gpr6 and gpr7 as the operator registers(op1, op2)
-
 
 ###	Runtime Structure
 
 			before call:
-						 	
+						 	|			|	    low address
+							|			|_		
+							|  param0   | \ 
+							|	 .		|  \
+							|	 .		|  |
+							|  paramn	|  |
+					fp->	|	oldfp	|  |    current frame
+							|	ret 	|  |
+							|  local0	|  |
+							|	 .		|  |
+							|	 .		|  /
+							|  localm	|_/
+							|	 .		|
+							|	 .		|
+							|	 .		|
+					(sp->)	|	 .		|	
+							|	param0	|<-push params
+							|	 .		|
+							|	 .		|
+					sp->	|	paramn	|		
+							|			|		
+							|			|	   high address
+			after call:
+
+							|	local0	|  |	old frame
+							|	 .		|  |
+							|	 .		|  /
+							|	localm	|_/
+							|	 .		|
+							|	 .		|
+							|	 .		|
+							|			|_
+							|  param0   | \
+							|	 .		|  \
+							|	 .		|  |
+							|  paramn	|  |
+					fp->	|	oldfp	|  |<-push old fp
+							|   ret 	|  |<-push ret address
+							|  local0	|  |<-skip local variables
+							|	 .		|  |	new frame
+							|	 .		|  /
+					sp->	|  localm	|_/
+
+
+
+			exit call:
 										 _
 							|  param0   | \ 
 							|	 .		|  \
 							|	 .		|  |
 							|  paramn	|  |
-					fp->	|	oldfp	|  |
+					fp->	|	oldfp	|  |    current frame
 							|	ret 	|  |
-							|  local0	|  |	current frame
-							|	 .		|  |
-							|	 .		|  |	
-							|  localm	|  |
-							|  temp0	|  |
-							|    .		|  |
-							|    .		|  /	
-							|  tempt	|_/
-							|	 .		|
-							|	 .		|
-							|	 .		|
-					sp->	|	 .		|
-
-
-
-			after call:
-
-							|	localm	|  |	old frame
-							|	temp0	|  |
+							|  local0	|  |
 							|	 .		|  |
 							|	 .		|  /
-							|	tempn	|_/
+							|  localm	|_/
 							|	 .		|
 							|	 .		|
-							|	 .		|_
-							|			| \	
-							|  param0   |  \ 
-							|	 .		|  |
-							|	 .		|  |
-							|  paramn	|  |
-					fp->	|	oldfp	|  |<-push old fp
-					(sp->)	|   ret 	|  |<-push ret address
-							|  local0	|  |<-skip local variables
-							|	 .		|  |	new frame
-							|	 .		|  |	
-							|  localm	|  |
-							|  temp0	|  |
-							|    .		|  |
-							|    .		|  /	
-					sp->	|  tempt	|_/
-							|			|
-							|			|
-
-###	Target Code
-	it translate t0 = pid + 1 (the 1st line ir code from register_process) into:
-		addsi r3, r5, 48 	<-compute pid's addr (pid sits in the static area with a offset of 48 from ds)
-		addsi r0, r0, 4  	<-inc sp
-		stw r0, r5, 0 	 	<-push pid's addr into stack
-		ldw r0, r5, 0 	 	<-pop pid's addr from stack 
-		addsi r0, r0, -4 	<-dec sp
-		ldw r5, r5, 0 	 	<-load pid's value
-		addsi r0, r0, 4  	<-inc sp
-		stw r0, r5, 0 	 	<-push pid's value into stack
-		addsi r4, r5, 4  	<-compute the 1's addr (1 sit in the const area with a offset of 4 from ds)
-		addsi r0, r0, 4  	<-inc sp
-		stw r0, r5, 0 		<-push 1's addr into stack
-		ldw r0, r5, 0 		<-pop 1's addr from stack
-		addsi r0, r0, -4 	<-dec sp
-		ldw r5, r5, 0 		<-load 1's value
-		addsi r0, r0, 4 	<-inc sp
-		stw r0, r5, 0 		<-push 1's value into stack
-		ldw r0, r6, 0 		<-pop 1's value into op1
-		addsi r0, r0, -4 	<-dec sp
-		ldw r0, r7, 0 		<-pop pid's value into op2
-		addsi r0, r0, -4 	<-dec sp
-		addsr r6, r7, r5 	<-compute pid + 1 and store result into acc
-		addsi r0, r0, 4 	<-inc sp
-		stw r0, r5, 0 		<-push acc into stack
-		addsi r1, r5, 0 	<-compute t0's addr (to sit in the stack with a offset of 0 from fp)
-		addsi r0, r0, 4 	<-inc sp
-		stw r0, r5, 0 		<-push t0's addr into stack
-		ldw r0, r6, 0 		<-pop t0's addr into op1
-		addsi r0, r0, -4 	<-dec sp
-		ldw r0, r7, 0 		<-pop pid + 1's result into op2
-		addsi r0, r0, -4 	<-dec sp
-		stw r6, r7, 0 		<-store pid + 1's value into t0
-
+							|	 .		|
+					sp->	|	 .		|	
+							|	param0	|	
+							|	 .		|
+							|	 .		|
+					(sp->)	|	paramn	|<-pop params

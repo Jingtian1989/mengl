@@ -132,7 +132,6 @@ class Frame(object):
         self._id_obj    = id_obj
         self._label     = 0
         self._used      = 4
-        self._temp_used = 4
         self._local_used= 0
         self._param_used= 0
         self._temps     = []
@@ -158,26 +157,31 @@ class Frame(object):
     def get_local_size(self):
         return self._local_used
 
-    def get_temp_size(self):
-        return self._temp_used
-
     def get_param_size(self):
         return self._param_used
 
-    def alloc_local(self, local_obj, is_local=False):
-        local_obj.set_offset(-self._used)
-        self._used = self._used + local_obj.get_type().get_width()
-        self._locals.append(local_obj)
-        if is_local:
-            self._local_used = self._local_used + local_obj.get_type().get_width()
+    def align_offset(self, curr_offset, align):
+        return(curr_offset + (align - 1))&(~(align-1))
+
+    def alloc_local(self, id_obj, is_param=False):
+        id_type     = id_obj.get_type()
+        id_align    = id_type.get_align()
+        id_width    = id_type.get_width()
+        if is_param:
+            offset = self.align_offset(self._param_used, id_align)
+            self._param_used = offset + id_width
+            #skip oldfp pointer
+            offset = -offset -4
         else:
-            self._param_used = self._param_used + local_obj.get_type().get_width()
+            offset = self.align_offset(self._local_used, id_align)
+            self._local_used = offset + id_width
+            #skip oldfp pointer & return address pointer
+            offset = offset + 8
+        id_obj.set_offset(offset)
 
     def alloc_temp(self, temp_type):
         num = len(self._temps)
         temp = ast.Temporary(num, temp_type)
-        temp.set_offset(self._temp_used)
-        self._temp_used = self._temp_used + temp_type.get_width()
         self._temps.append(temp)
         return temp
 
