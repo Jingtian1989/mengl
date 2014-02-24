@@ -361,7 +361,7 @@ class Or(Logical):
     """
 
     def __init__(self, token, expr1, expr2):
-        super(Or, self).__init__(tok, expr1, expr2)
+        super(Or, self).__init__(token, expr1, expr2)
 
     def jumping(self, t, f, frame):
         label = t
@@ -442,10 +442,10 @@ class Else(Statement):
         label1 = frame.new_label()
         label2 = frame.new_label()
         self._expr.jumping(0, label2, frame)
-        self.emitlabel(label1, frame)
+        self.emit_label(label1, frame)
         self._stmt1.gen(label1, f, frame)
         self.emit(il.Goto(f), frame)
-        self.emitlabel(label2, frame)
+        self.emit_label(label2, frame)
         self._stmt2.gen(label2, f, frame)
 
     def check(self):
@@ -471,8 +471,8 @@ class While(Statement):
     def gen(self, t, f, frame):
         self._after = f
         self._expr.jumping(0, f, frame)
-        label = ar.new_label()
-        self.emitlabel(label, frame)
+        label = frame.new_label()
+        self.emit_label(label, frame)
         self._stmt.gen(label, f, frame)
         self.emit(il.Goto(t), frame)
 
