@@ -1,5 +1,5 @@
 #	mengl
-mengl is a mixset of the c and Pascal language.
+mengl is a mixset of the C and Pascal language.
 
 ##	The Lex Grammer
 
