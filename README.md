@@ -272,7 +272,7 @@ to multi instruction sets, but now only employ a mips32-like ins introduced in t
  			goto l1
 		l1: ret
 
-###	Target instruct Set
+###	Target Instruction Set
 	logic: 
 		ANDR
 		ANDI
