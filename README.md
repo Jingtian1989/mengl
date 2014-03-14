@@ -1,5 +1,6 @@
 #	mengl
-mengl is a mixset of the C and Pascal language.
+mengl defines a mixset of C and Pascal language and is hopped a re-targetable compiler compiles it 
+to multi instruction sets, but now only employ a mips32-like ins introduced in the book 'cpu自制入門'.
 
 ##	The Lex Grammer
 
@@ -206,7 +207,7 @@ mengl is a mixset of the C and Pascal language.
 	through a tree walk and implements a simplest stack machine to translate the tacode into 
 	target machine's instruct set. 
 
-###	program demo
+###	Program Demo
 	a demo program that mengl take as input.
 
 	//struct declaration
@@ -341,6 +342,8 @@ mengl is a mixset of the C and Pascal language.
 					sp->	|	paramn	|		
 							|			|		
 							|			|	   high address
+
+							
 			after call:
 
 							|	local0	|  |	old frame
@@ -374,7 +377,7 @@ mengl is a mixset of the C and Pascal language.
 							|	ret 	|  |
 							|  local0	|  |
 							|	 .		|  |
-							|	 .		|  /
+							|	 .		|  / 
 							|  localm	|_/
 							|	 .		|
 							|	 .		|
@@ -384,3 +387,11 @@ mengl is a mixset of the C and Pascal language.
 							|	 .		|
 							|	 .		|
 					(sp->)	|	paramn	|<-pop params
+
+
+##	What's Next
+early times i employed a simple stack machine model for the easy of register allocation, but it turned out that
+it seemed too simple to generate usable ins for too many 'push&pop' operations, so i deleted the implemention
+and go on to study some other register allocation skills. 
+
+

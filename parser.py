@@ -284,15 +284,15 @@ class Parser(gen.CodeGenerator):
                             |   pointer_specifier
 
         """
-        if ty.Type.isbasic(self._look):
+        if ty.Type.is_basic(self._look):
             return self._parse_basic_specifier()
-        elif ty.Type.isstruct(self._look):
+        elif ty.Type.is_struct(self._look):
             return self._parse_struct_specifier()
-        elif ty.Type.isfunction(self._look):
+        elif ty.Type.is_function(self._look):
             return self._parse_function_specifier()
-        elif ty.Type.isarray(self._look):
+        elif ty.Type.is_array(self._look):
             return self._parse_array_specifier()
-        elif ty.Type.ispointer(self._look):
+        elif ty.Type.is_pointer(self._look):
             return self._parse_pointer_specifier()
 
 

@@ -3,10 +3,10 @@ import sym
 import lexer
 
 class Type(lexer.Word):
-    def __init__(self, s, tag, w, a):
-        super(Type , self).__init__(s, tag)
-        self.width = w
-        self.align = a
+    def __init__(self, lexeme, tag, width, align):
+        super(Type , self).__init__(lexeme, tag)
+        self._width = width
+        self._align = align
 
     @classmethod
     def numeric(cls, ty):
@@ -27,46 +27,46 @@ class Type(lexer.Word):
         return None
 
     @classmethod
-    def isbasic(cls, tok):
+    def is_basic(cls, tok):
         if tok.tag == lexer.Tag.INT or tok.tag == lexer.Tag.UNSIGNED \
             or tok.tag == lexer.Tag.VOID:
             return True
         return False
 
-    def isvoid(self, tok):
+    def is_void(self, tok):
         if tok.tag == lexer.Tag.VOID:
             return True
         return False
 
     @classmethod
-    def isstruct(cls, tok):
+    def is_struct(cls, tok):
         if tok.tag == lexer.Tag.STRUCT:
             return True
         return False
 
     @classmethod
-    def isfunction(cls, tok):
+    def is_function(cls, tok):
         if tok.tag == lexer.Tag.FUNCTION:
             return True
         return False
 
     @classmethod
-    def isarray(cls, tok):
+    def is_array(cls, tok):
         if tok.tag == lexer.Tag.ARRAY:
             return True
         return False
 
     @classmethod
-    def ispointer(cls, tok):
+    def is_pointer(cls, tok):
         if tok.tag == lexer.Tag.POINTER:
             return True
         return False
 
     def get_width(self):
-        return self.width
+        return self._width
 
     def get_align(self):
-        return self.align
+        return self._align
 
 class Array(Type):
     def __init__(self, size, of_type):
@@ -89,8 +89,8 @@ class Struct(Type):
     def init_struct_field(self, id_obj):
         id_type     = id_obj.get_type()
         id_align    = id_type.get_align()
-        id_offset   = (self.width + (id_align - 1))&(~(id_align-1))
-        self.width  = id_offset + id_type.get_width()
+        id_offset   = (self._width + (id_align - 1))&(~(id_align-1))
+        self._width  = id_offset + id_type.get_width()
         id_obj.set_offset(id_offset)
 
     def __str__(self):
