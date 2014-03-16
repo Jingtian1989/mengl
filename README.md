@@ -2,7 +2,7 @@
 mengl defines a mixset of C and Pascal language and is hopped a re-targetable compiler compiles it 
 to multi instruction sets, but now only employ a mips32-like ins introduced in the book 'cpu自制入門'.
 
-##	The Lex Grammer
+##	The Grammer
 
 ###	keywords:
 	array 				ARRAY 
@@ -52,7 +52,7 @@ to multi instruction sets, but now only employ a mips32-like ins introduced in t
 	'					
 	"					
 
-##	The Grammer
+##	The Syntax
 
 	program						->	struct_declaration_list struct_definition_list function_declaration_list function_definition_list
 
