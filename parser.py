@@ -700,7 +700,7 @@ class Parser(gen.CodeGenerator):
             stmt = ast.Statement.Null
         else:
             exp  = self._parse_logical_expression(env)
-            stmt = ast.Statement(exp)
+            stmt = ast.Eval(exp)
         self._match(';')
         return stmt
 

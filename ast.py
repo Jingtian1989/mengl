@@ -398,9 +398,21 @@ class Statement(Node):
         self._after = None
         self._expr  = expr
 
+    #
     def gen(self, t, f, frame):
-        if self._expr is not None:
-            self._expr.reduce(frame)
+        pass
+
+class Eval(Statement):
+    """ Eval class
+
+    Represent the expression statement.
+
+    """
+    def __init__(self, expr):
+        super(Statement, self).__init__(expr)
+
+    def gen(self, t, f, frame):
+        self._expr.reduce(frame)
 
 class If(Statement):
     """ If class
